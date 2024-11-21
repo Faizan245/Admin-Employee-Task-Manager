@@ -19,5 +19,9 @@ app.use(express.urlencoded({ extended: false, limit: 10000, parameterLimit: 3 })
 app.use('/', authRoutes);
 app.use('/', taskRoutes);
 
+app.get('/', (req, res) => {
+    res.send("Hello World");
+  });
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
