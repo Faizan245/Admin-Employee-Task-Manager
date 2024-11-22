@@ -124,8 +124,8 @@ router.post('/login', async (req, res) => {
 // Fetch all users API
 router.get('/users', async (req, res) => {
     try {
-        // Fetch all users, excluding password field
-        const users = await User.find({}, { password: 0 }); // 0 means excluding password
+        // Fetch all users excluding password field and those with status = "owner"
+        const users = await User.find({ status: { $ne: "owner" } }, { password: 0 }); // $ne means "not equal"
 
         if (!users || users.length === 0) {
             return res.status(404).json({ message: 'No users found' });
