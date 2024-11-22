@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid'); // For generating unique IDs
 const { isEmail } = require('validator'); // To validate email format
 const router = express.Router();
 const uuid = require('uuid');
+const jwt = require('jsonwebtoken');
 
 // Configure Multer to store files temporarily
 const storage = multer.diskStorage({});
@@ -67,7 +68,7 @@ router.post('/register', upload.single('profile'), async (req, res) => {
             username,
             email,
             gender,
-            password,
+            password: hashedPassword,
             status,
             designation,
             profilePicture: profilePictureUrl,
@@ -88,6 +89,9 @@ router.post('/register', upload.single('profile'), async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
+        
+        // console.log('Headers:', req.headers);
+        // console.log('Body:', req.body);
         const { email, password } = req.body;
         console.log(email, password)
 

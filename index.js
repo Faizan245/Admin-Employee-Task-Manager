@@ -6,12 +6,13 @@ const taskRoutes = require('./routes/taskRoutes')
 const cors = require('cors');
 
 const app = express();
-
+app.use(express.json());
 // Connect to MongoDB
 connectDB();
 
 // Middleware
-app.use(express.json()); // Parse JSON bodies
+
+ // Parse JSON bodies
 app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.urlencoded({ extended: false, limit: 10000, parameterLimit: 3 }));
 
