@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const uuid = require('uuid'); // Import uuid to generate unique userId
+// const bcrypt = require('bcryptjs');
+// const uuid = require('uuid'); // Import uuid to generate unique userId
 
 const UserSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true }, // Add userId with uniqueness
@@ -14,10 +14,10 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+// UserSchema.pre('save', async function (next) {
+//   if (!this.isModified('password')) return next();
+//   this.password = await bcrypt.hash(this.password, 10);
+//   next();
+// });
 
 module.exports = mongoose.model('User', UserSchema);

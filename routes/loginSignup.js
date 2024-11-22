@@ -43,8 +43,9 @@ router.post('/register', upload.single('profile'), async (req, res) => {
             }
         }
 
-        // Encrypt password before saving to the database
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Hash password before saving
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         let profilePictureUrl = null;
 
@@ -66,7 +67,7 @@ router.post('/register', upload.single('profile'), async (req, res) => {
             username,
             email,
             gender,
-            password: hashedPassword,
+            password,
             status,
             designation,
             profilePicture: profilePictureUrl,
@@ -88,6 +89,7 @@ router.post('/register', upload.single('profile'), async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(email, password)
 
         // Validate email and password presence
         if (!email || !password) {
@@ -106,11 +108,16 @@ router.post('/login', async (req, res) => {
         }
 
         // Compare the password with the hashed password stored in the database
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if (!isPasswordMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+        try {
+            const isPasswordMatch = await bcrypt.compare(password, user.password);
+            if (!isPasswordMatch) {
+                console.log('Password mismatch:', { enteredPassword: password, storedHash: user.password });
+                return res.status(401).json({ message: 'Invalid credentials' });
+            }
+        } catch (err) {
+            console.error('Error comparing passwords:', err);
+            return res.status(500).json({ message: 'Internal server error' });
         }
-
         // Generate a JWT token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
