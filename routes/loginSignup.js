@@ -121,10 +121,26 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Fetch all users API
+router.get('/users', async (req, res) => {
+    try {
+        // Fetch all users, excluding password field
+        const users = await User.find({}, { password: 0 }); // 0 means excluding password
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        res.status(200).json({ users });
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching users', error: err.message });
+    }
+});
+
 router.get('/logout',(req, res) => {
     // Logout API just sends a response indicating successful logout
     res.json({ message: "Logout successful" });
   });
 
-  
+
 module.exports = router;
