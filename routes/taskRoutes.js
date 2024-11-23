@@ -52,7 +52,7 @@ router.post('/assignTask', upload.array('files', 5), async (req, res) => {
     }
 });
 
-router.post('/updateTask', upload.array('files', 5), async (req, res) => {  // Accepts multiple files with a limit of 5
+router.post('/updateTask', upload.array('files', 5), async (req, res) => {
     try {
         const { taskId, newStatus } = req.body;
 
@@ -79,18 +79,19 @@ router.post('/updateTask', upload.array('files', 5), async (req, res) => {  // A
         }
 
         // Handle file uploads (if any)
-        let uploadedFileUrls = [];
         if (req.files && req.files.length > 0) {
+            // Ensure the 'files' array exists or initialize it
+            task.files = task.files || [];
+
             for (const file of req.files) {
                 const result = await cloudinary.uploader.upload(file.path, {
                     folder: 'task_files',
                     public_id: file.filename,
                 });
-                uploadedFileUrls.push(result.secure_url);  // Store the file URL in an array
+                task.documentURLs.push(result.secure_url);
+                console.log(result.secure_url)
+                // Push the file URL to the array
             }
-
-            // Append the new file URLs to the existing files array of the task
-            task.files.push(...uploadedFileUrls);
         }
 
         // Update the task status
@@ -105,7 +106,7 @@ router.post('/updateTask', upload.array('files', 5), async (req, res) => {  // A
                 taskDetails: task.taskDetails,
                 employeeId: task.employeeId,
                 employeeName: task.employeeName,
-                documentURLs: task.files,  // Include the updated files array
+                documentURLs: task.documentURLs, // Include the updated files array
             });
 
             // Save the task to the history collection
